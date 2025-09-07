@@ -1,4 +1,4 @@
-const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev//?url=";
+const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev/?url=";
 
 const gamesContainer = document.getElementById("games-container");
 const loadingElement = document.getElementById("loading");
@@ -215,3 +215,4 @@ async function loadGames() {
 }
 
 loadGames();
+
