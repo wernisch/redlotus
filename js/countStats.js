@@ -1,4 +1,4 @@
-const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev//?url=";
+const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev/?url=";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function getCountUp(id, start = 0, opts = {}) {
