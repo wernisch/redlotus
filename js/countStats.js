@@ -77,8 +77,6 @@ async function updateStats() {
 
   setText("hero-players", totalPlayers.toLocaleString());
   setText("hero-games", `${ids.length}+`);
-
-  setText("hero-rating", `${avg}%`);
 }
 
 updateStats();
