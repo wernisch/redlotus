@@ -1,4 +1,4 @@
-const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev//?url=";
+const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev/?url=";
 
 function truncateGameName(name) {
   return name && name.length > 40 ? name.substring(0, 40) + "…" : name || "";
@@ -138,3 +138,4 @@ async function initFeatured() {
 }
 
 initFeatured();
+
