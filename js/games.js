@@ -1,4 +1,4 @@
-const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev/?url=";
+const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/main/public/games.json";
 
 const gamesContainer = document.getElementById("games-container");
 const loadingElement = document.getElementById("loading");
@@ -11,58 +11,28 @@ function safeJSON(res) {
   return res.json();
 }
 
-function calculateLikeRatio(up = 0, down = 0) {
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function fetchJsonWithRetry(url, attempts = 3) {
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      return await safeJSON(res);
+    } catch (e) {
+      lastErr = e;
+      if (i < attempts) await sleep(250 * i);
+    }
+  }
+  throw lastErr;
+}
+
+function getLikeRatio(game) {
+  if (typeof game.likeRatio === "number") return game.likeRatio;
+  const up = Number(game.upVotes || 0);
+  const down = Number(game.downVotes || 0);
   const total = up + down;
   return total > 0 ? Math.round((up / total) * 100) : 0;
-}
-
-function chunk(arr, size) {
-  const out = [];
-  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
-  return out;
-}
-
-async function fetchThumbsBatch(universeIds) {
-  if (!universeIds.length) return {};
-  const CHUNK = 50;
-  const chunks = chunk(universeIds, CHUNK);
-  const map = {};
-
-  await Promise.all(
-    chunks.map(async (ids) => {
-      const url =
-        "https://thumbnails.roblox.com/v1/games/multiget/thumbnails?" +
-        "size=768x432&format=Png&isCircular=false&universeIds=" +
-        encodeURIComponent(ids.join(","));
-      try {
-        const res = await fetch(proxyUrl + encodeURIComponent(url));
-        const json = await safeJSON(res);
-        for (const row of json?.data || []) {
-          const uId = row?.universeId;
-          const img = row?.thumbnails?.[0]?.imageUrl || null;
-          if (uId) map[uId] = img;
-        }
-      } catch (e) {
-        console.error("[thumbs] failed for chunk:", ids, e);
-      }
-    })
-  );
-
-  return map;
-}
-
-async function fetchGameData(universeId) {
-  const url = `https://games.roblox.com/v1/games?universeIds=${universeId}`;
-  const res = await fetch(proxyUrl + encodeURIComponent(url));
-  const data = await safeJSON(res);
-  return data?.data?.[0] || null;
-}
-
-async function fetchGameVotes(universeId) {
-  const url = `https://games.roblox.com/v1/games/votes?universeIds=${universeId}`;
-  const res = await fetch(proxyUrl + encodeURIComponent(url));
-  const data = await safeJSON(res);
-  return data?.data?.[0] || null;
 }
 
 function renderGames(games) {
@@ -79,7 +49,7 @@ function renderGames(games) {
   if (gameCountElement) gameCountElement.textContent = `${games.length} ${games.length === 1 ? "game" : "games"}`;
 
   games.forEach((game, i) => {
-    const ratio = calculateLikeRatio(game.upVotes, game.downVotes);
+    const ratio = getLikeRatio(game);
     const delay = i * 80;
 
     const card = document.createElement("div");
@@ -87,19 +57,25 @@ function renderGames(games) {
     card.setAttribute("data-aos", "fade-up");
     card.setAttribute("data-aos-delay", String(delay));
 
+    const icon =
+      game.icon ||
+      (game.rootPlaceId
+        ? `https://www.roblox.com/asset-thumbnail/image?assetId=${game.rootPlaceId}&width=768&height=432`
+        : "");
+
     card.innerHTML = `
       <div class="relative overflow-hidden rounded-xl">
         <img
-          src="${game.icon}"
-          alt="${game.name}"
+          src="${icon}"
+          alt="${game.name || "Game"}"
           class="w-full h-56 object-cover"
           loading="lazy"
         >
         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
         <div class="absolute bottom-0 left-0 p-4">
-          <h3 class="text-lg font-bold text-white">${game.name}</h3>
+          <h3 class="text-lg font-bold text-white">${game.name || "Untitled"}</h3>
           <div class="flex items-center mt-1 text-sm">
-            <div class="flex items-center" title="${game.upVotes || 0} 👍 / ${game.downVotes || 0} 👎">
+            <div class="flex items-center" title="${ratio}% likes">
               <i class="fas fa-thumbs-up text-green-400 mr-1"></i>
               <span class="text-white">${ratio}%</span>
             </div>
@@ -147,52 +123,26 @@ async function loadGames() {
   loadingElement?.classList.remove("hidden");
 
   try {
-    const ids = Array.isArray(window.gameIds) ? window.gameIds : [];
-    if (!ids.length) {
-      console.warn("[games] window.gameIds missing or empty");
-      loadingElement?.classList.add("hidden");
-      noResultsElement?.classList.remove("hidden");
-      if (gameCountElement) gameCountElement.textContent = "0 games";
-      return;
-    }
+    const data = await fetchJsonWithRetry(rawJsonUrl);
+    const list = Array.isArray(data?.games) ? data.games : [];
 
-    const thumbMap = await fetchThumbsBatch(ids);
+    const normalized = list.map(g => ({
+      id: g.id,
+      rootPlaceId: g.rootPlaceId,
+      name: g.name || "Untitled",
+      description: g.description || "",
+      playing: Number(g.playing) || 0,
+      visits: Number(g.visits) || 0,
+      likeRatio: typeof g.likeRatio === "number" ? g.likeRatio : undefined,
+      upVotes: g.upVotes,
+      downVotes: g.downVotes,
+      icon: g.icon || ""
+    }));
 
-    const results = await Promise.all(
-      ids.map(async (id) => {
-        try {
-          const [info, votes] = await Promise.all([
-            fetchGameData(id),
-            fetchGameVotes(id),
-          ]);
-          if (!info) return null;
-
-          return {
-            id: info.id,
-            rootPlaceId: info.rootPlaceId,
-            name: info.name,
-            description: info.description,
-            playing: info.playing || 0,
-            visits: info.visits || 0,
-            upVotes: votes?.upVotes || 0,
-            downVotes: votes?.downVotes || 0,
-            icon:
-              thumbMap[info.id] ||
-              `https://www.roblox.com/asset-thumbnail/image?assetId=${info.rootPlaceId}&width=768&height=432`,
-          };
-        } catch (e) {
-          console.error("[games] failed for", id, e);
-          return null;
-        }
-      })
-    );
-
-    const valid = results.filter(Boolean);
-    const sorted = valid.sort((a, b) => (b.playing || 0) - (a.playing || 0));
+    const sorted = normalized.sort((a, b) => b.playing - a.playing);
 
     renderGames(sorted);
 
-    // Search
     if (searchInput) {
       searchInput.addEventListener("input", () => {
         const filtered = filterGames(sorted, searchInput.value);
@@ -215,4 +165,3 @@ async function loadGames() {
 }
 
 loadGames();
-
