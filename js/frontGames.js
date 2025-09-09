@@ -1,70 +1,48 @@
-const proxyUrl = "https://red-lotus.bloxyhdd.workers.dev/?url=";
+const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/main/public/games.json";
 
 function truncateGameName(name) {
   return name && name.length > 40 ? name.substring(0, 40) + "…" : name || "";
 }
 
-async function fetchThumbsBatch(universeIds) {
-  if (!universeIds.length) return {};
-  const url =
-    "https://thumbnails.roblox.com/v1/games/multiget/thumbnails?" +
-    "size=768x432&format=Png&isCircular=false&universeIds=" +
-    encodeURIComponent(universeIds.join(","));
-  try {
-    const res = await fetch(proxyUrl + encodeURIComponent(url));
-    const json = await res.json();
-    const map = {};
-    for (const row of json?.data || []) {
-      const uId = row?.universeId;
-      const img = row?.thumbnails?.[0]?.imageUrl || null;
-      if (uId) map[uId] = img;
+async function fetchJsonWithRetry(url, attempts = 3) {
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      lastErr = e;
+      if (i < attempts) await new Promise(r => setTimeout(r, 250 * i));
     }
-    return map;
-  } catch (e) {
-    console.error("thumbnail multiget failed:", e);
-    return {};
   }
+  throw lastErr;
 }
 
 async function getGamesData() {
-  const ids = Array.isArray(window.gameIds) ? window.gameIds : [];
-  if (!ids.length) {
-    console.warn("[frontGames] window.gameIds is missing or empty.");
+  try {
+    const data = await fetchJsonWithRetry(rawJsonUrl);
+    const games = Array.isArray(data?.games) ? data.games : [];
+
+    const cleaned = games
+      .map(g => ({
+        id: g.id,
+        rootPlaceId: g.rootPlaceId,
+        name: g.name || "Untitled",
+        playing: Number(g.playing) || 0,
+        visits: Number(g.visits) || 0,
+        icon: g.icon || (g.rootPlaceId
+          ? `https://www.roblox.com/asset-thumbnail/image?assetId=${g.rootPlaceId}&width=768&height=432`
+          : "")
+      }))
+      .filter(g => g && g.id && g.rootPlaceId);
+
+    cleaned.sort((a, b) => b.playing - a.playing);
+    return cleaned.slice(0, 5);
+  } catch (err) {
+    console.error("[frontGames] failed to load raw games.json:", err);
     return [];
   }
-
-  const thumbMap = await fetchThumbsBatch(ids);
-
-  const games = [];
-  await Promise.all(
-    ids.map(async (id) => {
-      try {
-        const gameRes = await fetch(
-          proxyUrl + encodeURIComponent(`https://games.roblox.com/v1/games?universeIds=${id}`)
-        );
-        if (!gameRes.ok) throw new Error(`games api ${gameRes.status}`);
-        const gameJson = await gameRes.json();
-        const game = gameJson?.data?.[0];
-        if (!game) return;
-
-        games.push({
-          id: game.id,
-          rootPlaceId: game.rootPlaceId,
-          name: game.name,
-          playing: game.playing || 0,
-          visits: game.visits || 0,
-          icon:
-            thumbMap[game.id] ||
-            `https://www.roblox.com/asset-thumbnail/image?assetId=${game.rootPlaceId}&width=768&height=432`,
-        });
-      } catch (err) {
-        console.error("Failed to load data for:", id, err);
-      }
-    })
-  );
-
-  games.sort((a, b) => (b.playing || 0) - (a.playing || 0));
-  return games.slice(0, 5);
 }
 
 function renderCarousel(slides) {
@@ -138,4 +116,3 @@ async function initFeatured() {
 }
 
 initFeatured();
-
