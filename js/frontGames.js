@@ -47,26 +47,27 @@ async function getGamesData() {
 
 function renderCarousel(slides) {
   const inner = document.getElementById("carouselInner");
-  if (!inner) return;
+  const wrapper = document.getElementById("carouselWrapper");
+  const prev = document.getElementById("prevSlide");
+  const next = document.getElementById("nextSlide");
+  if (!inner || !wrapper) return;
 
   inner.innerHTML = "";
   if (!slides.length) {
-    inner.innerHTML =
-      `<div class="w-full p-8 text-center text-gray-400">No games to show right now.</div>`;
+    inner.innerHTML = `<div class="w-full p-8 text-center text-gray-400">No games to show right now.</div>`;
     return;
   }
 
-  inner.style.width = `${slides.length * 100}%`;
   inner.style.display = "flex";
-  inner.style.transform = "translateX(0)";
   inner.style.willChange = "transform";
 
   slides.forEach((g) => {
     const slide = document.createElement("div");
-    slide.className = "w-full flex-shrink-0 relative";
+    slide.className = "flex-shrink-0 relative";
+    slide.style.flex = "0 0 100%";
     slide.innerHTML = `
       <div class="relative h-72 md:h-96 overflow-hidden rounded-2xl border border-red-900/30">
-        <img src="${g.icon}" alt="${g.name}" class="w-full h-full object-cover">
+        <img src="${g.icon}" alt="${g.name}" class="w-full h-full object-cover" loading="lazy">
         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
         <div class="absolute bottom-0 left-0 right-0 p-5 flex items-end justify-between gap-4">
           <div>
@@ -75,7 +76,7 @@ function renderCarousel(slides) {
               🟢 ${g.playing.toLocaleString()} playing &nbsp;|&nbsp; 👁️ ${g.visits.toLocaleString()} visits
             </p>
           </div>
-          <a href="https://www.roblox.com/games/${g.rootPlaceId}" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.roblox.com/games/${g.id}" target="_blank" rel="noopener noreferrer"
              class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-md font-semibold whitespace-nowrap">
             Play Now
           </a>
@@ -85,25 +86,36 @@ function renderCarousel(slides) {
     inner.appendChild(slide);
   });
 
-  const prev = document.getElementById("prevSlide");
-  const next = document.getElementById("nextSlide");
   let index = 0;
+  let slideWidth = wrapper.clientWidth;
 
   function apply() {
-    inner.style.transform = `translateX(-${index * (100 / slides.length)}%)`;
+    inner.style.transform = `translateX(${-index * slideWidth}px)`;
   }
+
   function go(delta) {
     index = (index + delta + slides.length) % slides.length;
     apply();
   }
 
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const old = slideWidth;
+      slideWidth = wrapper.clientWidth;
+      if (slideWidth !== old) apply();
+    }, 100);
+  });
+
   prev?.addEventListener("click", () => go(-1));
   next?.addEventListener("click", () => go(1));
 
   let timer = setInterval(() => go(1), 6000);
-  const wrapper = document.getElementById("carouselWrapper");
-  wrapper?.addEventListener("mouseenter", () => clearInterval(timer));
-  wrapper?.addEventListener("mouseleave", () => (timer = setInterval(() => go(1), 6000)));
+  wrapper.addEventListener("mouseenter", () => clearInterval(timer));
+  wrapper.addEventListener("mouseleave", () => (timer = setInterval(() => go(1), 6000)));
+
+  apply();
 }
 
 async function initFeatured() {
@@ -116,3 +128,4 @@ async function initFeatured() {
 }
 
 initFeatured();
+
