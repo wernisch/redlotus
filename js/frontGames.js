@@ -1,4 +1,4 @@
-const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/main/public/games.json";
+const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/refs/heads/main/public/games.json";
 
 function truncateGameName(name) {
   return name && name.length > 40 ? name.substring(0, 40) + "…" : name || "";
@@ -128,5 +128,6 @@ async function initFeatured() {
 }
 
 initFeatured();
+
 
 
