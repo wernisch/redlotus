@@ -48,14 +48,13 @@ function renderGames(games) {
   noResultsElement?.classList.add("hidden");
   if (gameCountElement) gameCountElement.textContent = `${games.length} ${games.length === 1 ? "game" : "games"}`;
 
-  games.forEach((game, i) => {
+  games.forEach((game, index) => {
     const ratio = getLikeRatio(game);
-    const delay = i * 80;
+    const delay = index < 4 ? (index * 150) + 100 : 100;
 
-    const card = document.createElement("div");
-    card.className = "lotus-card group h-full flex flex-col";
-    card.setAttribute("data-aos", "fade-up");
-    card.setAttribute("data-aos-delay", String(delay));
+    const cardWrap = document.createElement("div");
+    cardWrap.setAttribute("data-aos", "fade-up");
+    cardWrap.setAttribute("data-aos-delay", String(delay));
 
     const icon =
       game.icon ||
@@ -63,52 +62,73 @@ function renderGames(games) {
         ? `https://www.roblox.com/asset-thumbnail/image?assetId=${game.rootPlaceId}&width=768&height=432`
         : "");
 
-    card.innerHTML = `
-      <div class="relative overflow-hidden rounded-xl">
-        <img
-          src="${icon}"
-          alt="${game.name || "Game"}"
-          class="w-full h-56 object-cover"
-          loading="lazy"
-        >
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-        <div class="absolute bottom-0 left-0 p-4">
-          <h3 class="text-lg font-bold text-white">${game.name || "Untitled"}</h3>
-          <div class="flex items-center mt-1 text-sm">
-            <div class="flex items-center" title="${ratio}% likes">
-              <i class="fas fa-thumbs-up text-green-400 mr-1"></i>
-              <span class="text-white">${ratio}%</span>
-            </div>
-            <span class="mx-2 text-gray-400">|</span>
-            <span class="text-red-300">${(game.visits || 0).toLocaleString()} visits</span>
-          </div>
-        </div>
-      </div>
+    cardWrap.innerHTML = `
+<div class="group h-full flex flex-col rounded-xl overflow-hidden border border-[#ff0000]/40 bg-neutral-900/70
+            shadow-[0_0_8px_#ff0000] hover:shadow-[0_0_16px_#ff0000] transition">
+  <div class="relative bg-black aspect-[16/9]">
+    <img
+      class="absolute inset-0 w-full h-full object-contain"
+      src="${icon}"
+      alt="${game.name || "Game"}"
+      loading="lazy"
+    >
 
-      <div class="p-4">
-        <div class="mt-1 flex justify-between items-center text-sm">
-          <span class="text-green-400">
-            <span class="font-semibold">${(game.playing || 0).toLocaleString()}</span> playing now
-          </span>
-          <a
-            href="https://www.roblox.com/games/${game.rootPlaceId}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-500 transition text-white font-semibold"
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none"></div>
+
+    <div class="absolute bottom-0 left-0 p-4 pointer-events-none">
+      <h3 class="text-xl font-bold text-white">${game.name || "Untitled"}</h3>
+      <div class="flex items-center mt-1 text-sm gap-2">
+        <span class="flex items-center text-green-400 font-bold">
+          <svg
+            class="w-6 h-6 mr-1 text-green-400"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
           >
-            Play
-          </a>
-        </div>
+            <circle cx="9" cy="7" r="3.5"></circle>
+            <path d="M3.5 18.5c0-3 2.7-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path>
+            <circle cx="17" cy="9" r="2.5"></circle>
+            <path d="M14.5 18.5c0-2.2 2-4 4-4s4 1.8 4 4"></path>
+          </svg>
+          <span class="text-white"><span class="font-semibold">${(game.playing || 0).toLocaleString()}</span> playing</span>
+        </span>
+
+        <span class="text-gray-400">|</span>
+
+        <span class="flex items-center" title="${ratio}% likes">
+          <i class="fas fa-thumbs-up text-green-400 mr-1"></i>
+          <span class="text-white font-semibold">${ratio}%</span>
+        </span>
+
+        <span class="text-gray-400">|</span>
+
+        <span class="text-white font-semibold">${(game.visits || 0).toLocaleString()} visits</span>
       </div>
+    </div>
+
+    <a
+      href="https://www.roblox.com/games/${game.rootPlaceId}"
+      target="_blank" rel="noopener noreferrer"
+      class="absolute bottom-0 right-0 m-4 inline-flex items-center justify-center px-5 py-2 rounded-md bg-[#ff0000] hover:bg-[#e60000] text-white font-semibold text-sm transition w-32 border-2 border-black shadow-[0_2px_0_#000] pointer-events-auto"
+    >
+      Play Now
+    </a>
+  </div>
+</div>
     `;
 
-    gamesContainer.appendChild(card);
+    gamesContainer.appendChild(cardWrap);
   });
 
   if (window.AOS?.refresh) {
     try { window.AOS.refresh(); } catch {}
   }
 }
+
 
 function filterGames(games, term) {
   const t = term.trim().toLowerCase();
@@ -154,10 +174,10 @@ async function loadGames() {
     if (noResultsElement) {
       noResultsElement.classList.remove("hidden");
       noResultsElement.innerHTML = `
-        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-300">Error loading games</h3>
-        <p class="mt-2 text-gray-500">Please try again later</p>
-      `;
+          <i class="fas fa-exclamation-triangle text-4xl text-lotus mb-4"></i>
+          <h3 class="text-xl font-medium text-gray-300">Error loading games</h3>
+          <p class="mt-2 text-gray-500">Please try again later</p>
+        `;
     }
   } finally {
     loadingElement?.classList.add("hidden");
@@ -165,4 +185,3 @@ async function loadGames() {
 }
 
 loadGames();
-
