@@ -76,7 +76,7 @@ function renderCarousel(slides) {
               🟢 ${g.playing.toLocaleString()} playing &nbsp;|&nbsp; 👁️ ${g.visits.toLocaleString()} visits
             </p>
           </div>
-          <a href="https://www.roblox.com/games/${g.id}" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.roblox.com/games/${g.rootPlaceId}" target="_blank" rel="noopener noreferrer"
              class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-md font-semibold whitespace-nowrap">
             Play Now
           </a>
@@ -128,4 +128,5 @@ async function initFeatured() {
 }
 
 initFeatured();
+
 
