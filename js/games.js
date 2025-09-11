@@ -1,4 +1,4 @@
-const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/main/public/games.json";
+const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/refs/heads/main/public/games.json";
 
 const gamesContainer = document.getElementById("games-container");
 const loadingElement = document.getElementById("loading");
@@ -165,3 +165,4 @@ async function loadGames() {
 }
 
 loadGames();
+
