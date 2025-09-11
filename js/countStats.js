@@ -1,4 +1,4 @@
-const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/main/public/games.json";
+const rawJsonUrl = "https://raw.githubusercontent.com/wernisch/red-lotus-stats/refs/heads/main/public/games.json";
 
 function getCountUp(id, start = 0, opts = {}) {
   if (window.CountUp) {
