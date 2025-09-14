@@ -8,12 +8,31 @@
   <title>Red Lotus Studio</title>
   <link rel="icon" type="image/webp" href="img/TransparentLogo.webp">
   <meta name="description"
-    content="Red Lotus is a Roblox studio crafting bold, high‑performing experiences. We partner with creators to design, develop, and scale games to the top of the platform." />
+    content="Red Lotus is a Roblox studio crafting bold, high-performing experiences. We partner with creators to design, develop, and scale games to the top of the platform." />
   <meta name="keywords"
     content="Red Lotus, Roblox, Roblox studio, Roblox development, game studio, Roblox games, game acquisitions, Roblox publishing" />
   <meta name="author" content="Red Lotus Studio" />
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            lotus: {
+              DEFAULT: "#ff0000",
+              500: "#ff0000",
+              600: "#ff0000",
+              700: "#ff0000",
+              800: "#ff0000",
+              900: "#ff0000"
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
@@ -24,8 +43,7 @@
 
   <style>
     :root {
-      --lotus-red: #ef4444;
-      --lotus-red-600: #dc2626;
+      --lotus-red: #ff0000;
     }
 
     html {
@@ -34,15 +52,15 @@
 
     .bg-grid {
       background:
-        radial-gradient(circle at 20% 10%, rgba(239, 68, 68, 0.10), transparent 40%),
-        radial-gradient(circle at 80% 30%, rgba(239, 68, 68, 0.06), transparent 50%),
-        radial-gradient(circle at 50% 80%, rgba(239, 68, 68, 0.08), transparent 45%),
-        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 80px),
-        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 80px);
+        radial-gradient(circle at 20% 10%, rgba(255, 0, 0, 0.25), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(255, 0, 0, 0.2), transparent 55%),
+        radial-gradient(circle at 50% 80%, rgba(255, 0, 0, 0.22), transparent 50%),
+        repeating-linear-gradient(90deg, rgba(255, 0, 0, 0.05) 0 1px, transparent 1px 80px),
+        repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.05) 0 1px, transparent 1px 80px);
     }
 
     .brand-glow {
-      box-shadow: 0 0 40px rgba(239, 68, 68, 0.25);
+      box-shadow: 0 0 40px rgba(255, 0, 0, 0.25);
     }
 
     .btn-ring-red {
@@ -54,7 +72,7 @@
       position: absolute;
       inset: -2px;
       border-radius: 0.75rem;
-      background: radial-gradient(60% 60% at 50% 50%, rgba(239, 68, 68, .35), rgba(239, 68, 68, 0) 60%);
+      background: radial-gradient(60% 60% at 50% 50%, rgba(255, 0, 0, .35), rgba(255, 0, 0, 0) 60%);
       opacity: 0;
       transition: opacity .3s ease;
       pointer-events: none;
@@ -66,15 +84,15 @@
 
     .underline-red {
       text-decoration: underline;
-      text-decoration-color: rgba(239, 68, 68, .6);
+      text-decoration-color: rgba(255, 0, 0, 0.6);
       text-decoration-thickness: 2px;
       text-underline-offset: 6px;
     }
   </style>
 </head>
 
-<body class="relative bg-black text-white selection:bg-red-600/40">
-  <nav class="fixed top-0 z-50 w-full bg-black/80 backdrop-blur border-b border-red-900/30">
+<body class="relative bg-black text-white selection:bg-lotus/40">
+  <nav class="fixed top-0 z-50 w-full bg-black/80 backdrop-blur border-b border-lotus/30">
     <div class="flex justify-between items-center px-6 py-4">
       <div class="flex items-center space-x-8">
         <div class="flex items-center space-x-3">
@@ -82,16 +100,16 @@
           <a href="#" class="text-white text-lg font-semibold tracking-wide">Red Lotus</a>
         </div>
         <div class="hidden md:flex space-x-1">
-          <a href="#games"
-            class="px-4 py-2 rounded-md text-sm font-medium text-white/90 hover:text-white hover:bg-red-600/20 transition">Games</a>
+          <a href="games/"
+            class="px-4 py-2 rounded-md text-sm font-medium text-white/90 hover:text-white hover:bg-lotus/20 transition">Games</a>
           <a href="#about"
-            class="px-4 py-2 rounded-md text-sm font-medium text-white/90 hover:text-white hover:bg-red-600/20 transition">About</a>
+            class="px-4 py-2 rounded-md text-sm font-medium text-white/90 hover:text-white hover:bg-lotus/20 transition">About</a>
         </div>
       </div>
 
       <div class="hidden md:flex space-x-3">
         <a href="games/"
-          class="px-4 py-2 rounded-md text-sm bg-red-600 hover:bg-red-500 text-white transition brand-glow">All
+          class="px-4 py-2 rounded-md text-sm bg-lotus hover:bg-lotus/90 text-white transition brand-glow">All
           Games</a>
       </div>
 
@@ -102,10 +120,10 @@
 
     <div id="mobile-menu"
       class="hidden md:hidden flex-col space-y-2 px-6 pb-4 transition-all duration-300 ease-out transform opacity-0 scale-95 origin-top bg-black rounded-b-md">
-      <a href="#games" class="block text-white py-2 rounded-md hover:bg-red-600/20 transition">Games</a>
-      <a href="#about" class="block text-white py-2 rounded-md hover:bg-red-600/20 transition">About</a>
-      <a href="games/"
-        class="block text-white py-2 rounded-md border border-red-700/40 hover:bg-red-600/10 transition">All Games</a>
+      <a href="#games" class="block text-white py-2 rounded-md hover:bg-lotus/20 transition">Games</a>
+      <a href="#about" class="block text-white py-2 rounded-md hover:bg-lotus/20 transition">About</a>
+      <a href="games/" class="block text-white py-2 rounded-md border border-lotus/40 hover:bg-lotus/10 transition">All
+        Games</a>
     </div>
   </nav>
 
@@ -117,21 +135,22 @@
       <div class="blur-to-clear">
         <h1 class="albert text-[3rem] md:text-[5rem] font-extrabold leading-[1.2] mt-[-5rem] mb-6" data-aos="fade-down"
           data-aos-delay="100">
-          Forging unforgettable<br><span class="text-red-500">Roblox games</span>
+          Forging unforgettable<br><span class="text-lotus">Roblox games</span>
         </h1>
       </div>
       <p class="max-w-2xl mx-auto text-gray-300" data-aos="fade-up" data-aos-delay="200">
-        Red Lotus partners with ambitious creators to design, scale, and sustain chart‑topping experiences.
+        Red Lotus partners with ambitious creators to design, scale, and sustain chart-topping experiences.
       </p>
       <div class="mt-8 flex flex-wrap gap-4 justify-center" data-aos="fade-up" data-aos-delay="300">
-        <a href="#games"
+        <a href="games/"
           class="albert relative overflow-hidden px-8 py-4 rounded-xl bg-white text-black font-semibold transition duration-300 hover:scale-105 btn-ring-red">
           Explore Games
         </a>
         <a href="#about"
-          class="albert relative overflow-hidden px-8 py-4 rounded-xl border border-red-700/60 text-white font-semibold transition duration-300 hover:scale-105 hover:bg-red-600/15">
+          class="albert relative overflow-hidden px-8 py-4 rounded-xl bg-black border border-lotus/60 text-white font-semibold transition duration-300 hover:scale-105 hover:bg-[#1a0000]">
           About Us
         </a>
+
       </div>
     </div>
   </section>
@@ -139,21 +158,23 @@
   <section class="bg-black py-24 px-6" data-aos="fade-up">
     <div class="max-w-6xl mx-auto text-center">
       <div class="blur-to-clear">
-        <h2 class="text-4xl font-bold mb-12 underline-red" data-aos="zoom-in" data-aos-delay="100">Our Impact</h2>
+        <h2 class="text-4xl font-bold mb-12" data-aos="zoom-in" data-aos-delay="100">Our Impact</h2>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <div
-          class="bg-neutral-900/80 p-6 rounded-xl border border-red-900/30 hover:scale-[1.03] transition text-center">
+          class="bg-neutral-900/80 p-6 rounded-xl border border-red-600 shadow-[0_0_15px_red] hover:scale-[1.03] transition text-center">
           <h4 class="text-sm text-gray-400 mb-2">Games Created</h4>
           <p id="games-created" class="text-2xl font-semibold">0</p>
         </div>
+
         <div
-          class="bg-neutral-900/80 p-6 rounded-xl border border-red-900/30 hover:scale-[1.03] transition text-center">
+          class="bg-neutral-900/80 p-6 rounded-xl border border-red-600 shadow-[0_0_15px_red] hover:scale-[1.03] transition text-center">
           <h4 class="text-sm text-gray-400 mb-2">Active Players</h4>
           <p id="player-count" class="text-2xl font-semibold">0</p>
         </div>
+
         <div
-          class="bg-neutral-900/80 p-6 rounded-xl border border-red-900/30 hover:scale-[1.03] transition text-center">
+          class="bg-neutral-900/80 p-6 rounded-xl border border-red-600 shadow-[0_0_15px_red] hover:scale-[1.03] transition text-center">
           <h4 class="text-sm text-gray-400 mb-2">Visits</h4>
           <p id="visits-count" class="text-2xl font-semibold">0</p>
         </div>
@@ -161,41 +182,13 @@
     </div>
   </section>
 
-  <section id="games" class="relative py-20 bg-black">
-    <div class="max-w-6xl mx-auto px-6 relative">
-      <div class="blur-to-clear text-center">
-        <h2 class="text-4xl font-bold mb-12"><span class="text-white">Featured</span> <span
-            class="text-red-500">Games</span></h2>
-      </div>
-      <div class="blur-to-clear">
-        <div class="flex items-center justify-center gap-6">
-          <button style="user-select: none;" id="prevSlide"
-            class="bg-white/5 hover:bg-white/10 p-3 rounded-full z-10 border border-red-900/30">←</button>
-          <div class="relative overflow-hidden rounded-2xl w-full max-w-3xl brand-glow" id="carouselWrapper">
-            <div id="carouselInner" class="flex transition-transform duration-700 ease-in-out w-full"></div>
-          </div>
-          <button style="user-select: none;" id="nextSlide"
-            class="bg-white/5 hover:bg-white/10 p-3 rounded-full z-10 border border-red-900/30">→</button>
-        </div>
-      </div>
-      <div class="blur-to-clear">
-        <div data-aos="fade-up" data-aos-delay="300" class="mt-12 flex justify-center">
-          <div class="transition-transform hover:scale-105">
-            <a href="games/" class="inline-block px-6 py-3 border border-red-800/50 hover:bg-red-600/15 rounded-md">All
-              Games</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="about" class="py-24 px-6 max-w-5xl mx-auto text-center" data-aos="fade">
     <div class="blur-to-clear">
-      <h2 class="text-4xl font-bold mb-6">About <span class="text-red-500">Us</span></h2>
+      <h2 class="text-4xl font-bold mb-6">About <span class="text-lotus">Us</span></h2>
     </div>
     <div class="blur-to-clear">
       <p class="text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="200">
-        Red Lotus was founded in 2025 to help Roblox developers bring their game to the next level. From full‑stack
+        Red Lotus was founded in 2025 to help Roblox developers bring their game to the next level. From full-stack
         development to marketing and acquisitions, we help creators reach (and stay) on the charts. Collaborate with us
         — or sell your game.
       </p>
@@ -203,32 +196,42 @@
 
     <div class="blur-to-clear">
       <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+
         <div class="transition-transform hover:scale-[1.03]">
-          <div data-aos="fade-up" data-aos-delay="300" class="bg-neutral-900 p-6 rounded-xl border border-red-900/30">
+          <div data-aos="fade-up" data-aos-delay="300"
+            class="bg-neutral-900 p-6 rounded-xl border border-red-600 shadow-[0_0_15px_red]">
             <h3 class="text-xl font-semibold mb-2">Creative Design</h3>
-            <p class="text-gray-400 text-sm">Distinct worlds, unforgettable visuals, and smart UX across every map,
-              mechanic, and character.</p>
-          </div>
-        </div>
-        <div class="transition-transform hover:scale-[1.03]">
-          <div data-aos="fade-up" data-aos-delay="400" class="bg-neutral-900 p-6 rounded-xl border border-red-900/30">
-            <h3 class="text-xl font-semibold mb-2">Engaging Gameplay</h3>
-            <p class="text-gray-400 text-sm">Tight loops and progression that keep players challenged and coming back.
+            <p class="text-gray-400 text-sm">
+              Distinct worlds, unforgettable visuals, and smart UX across every map, mechanic, and character.
             </p>
           </div>
         </div>
+
         <div class="transition-transform hover:scale-[1.03]">
-          <div data-aos="fade-up" data-aos-delay="500" class="bg-neutral-900 p-6 rounded-xl border border-red-900/30">
-            <h3 class="text-xl font-semibold mb-2">Game Acquisitions</h3>
-            <p class="text-gray-400 text-sm">Acquire, grow, and scale Roblox titles — creators get revenue, exposure,
-              and time for the next idea.</p>
+          <div data-aos="fade-up" data-aos-delay="400"
+            class="bg-neutral-900 p-6 rounded-xl border border-red-600 shadow-[0_0_15px_red]">
+            <h3 class="text-xl font-semibold mb-2">Engaging Gameplay</h3>
+            <p class="text-gray-400 text-sm">
+              Tight loops and progression that keep players challenged and coming back.
+            </p>
           </div>
         </div>
+
+        <div class="transition-transform hover:scale-[1.03]">
+          <div data-aos="fade-up" data-aos-delay="500"
+            class="bg-neutral-900 p-6 rounded-xl border border-red-600 shadow-[0_0_15px_red]">
+            <h3 class="text-xl font-semibold mb-2">Game Acquisitions</h3>
+            <p class="text-gray-400 text-sm">
+              Acquire, grow, and scale Roblox titles — creators get revenue, exposure, and time for the next idea.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <footer class="bg-black border-t border-red-900/30">
+  <footer class="bg-black border-t border-lotus/30">
     <div class="blur-to-clear">
       <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div class="xl:grid xl:grid-cols-3 xl:gap-8">
@@ -265,7 +268,7 @@
           </div>
         </div>
 
-        <div class="mt-12 border-t border-red-900/30 pt-8">
+        <div class="mt-12 border-t border-lotus/30 pt-8">
           <p class="text-base text-gray-500 text-center">
             &copy; 2025 Red Lotus Studio. All rights reserved. — Site by <a target="_blank"
               href="https://brejndead.net"><span class="font-bold">@brejndead</span></a>
@@ -275,14 +278,7 @@
     </div>
   </footer>
 
-
-  <script type="module">
-    import { gameIds } from "./ids.js";
-    window.gameIds = gameIds;
-  </script>
-
   <script type="module" src="./js/countStats.js"></script>
-  <script type="module" src="./js/frontGames.js?v=3"></script>
 
   <script>
     AOS.init({ once: true, duration: 700 });
@@ -298,17 +294,4 @@
   </script>
 </body>
 
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
